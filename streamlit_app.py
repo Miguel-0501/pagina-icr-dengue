@@ -7,11 +7,9 @@ import plotly.express as px
 import unicodedata
 import numpy as np
 import os
-import threading
-import http.server
-import socketserver
 import io
 import tempfile
+import streamlit.components.v1 as components
 
 
 # ==========================
@@ -143,25 +141,7 @@ sinos_shp = {
 }
 
 BASE     = os.path.dirname(__file__)
-# Servidor local para mapas completos
-STATIC_PORT = 8502
-STATIC_DIR  = tempfile.gettempdir()
 
-def iniciar_servidor_estatico():
-    os.chdir(STATIC_DIR)
-    handler = http.server.SimpleHTTPRequestHandler
-    handler.log_message = lambda *args: None
-    try:
-        socketserver.TCPServer.allow_reuse_address = True
-        with socketserver.TCPServer(("", STATIC_PORT), handler) as httpd:
-            httpd.serve_forever()
-    except OSError:
-        pass  # Puerto ya en uso, servidor ya corriendo
-
-if 'servidor_iniciado' not in st.session_state:
-    t = threading.Thread(target=iniciar_servidor_estatico, daemon=True)
-    t.start()
-    st.session_state['servidor_iniciado'] = True
 
 SHP      = os.path.join(BASE, 'data', 'mexico_simple.gpkg')
 XLS      = os.path.join(BASE, 'data', 'Base de datos principal defunciones.xlsx')
@@ -484,15 +464,10 @@ def render_periodo(periodo, df, df_def):
                 gdf_irm, 'irm_prom', 'IRM por Estado',
                 COLOR_IRM, 'IRM Promedio:', f"irm_full_{periodo}")
             mapa_irm_temp.save(ruta_irm_full)
-        st.markdown(
-            f'<a href="http://localhost:8502/mapa_irm_full_{periodo}.html" '
-            f'target="_blank" style="display:inline-block;background:linear-gradient'
-            f'(135deg,#1a6fff,#0d4bcc);color:white;font-weight:700;padding:10px 22px;'
-            f'border-radius:8px;text-decoration:none;font-size:0.9rem;margin-bottom:10px;'
-            f'box-shadow:0 4px 15px rgba(26,111,255,0.3);">'
-            f'&#x26F6; Ver Mapa IRM Completo</a>',
-            unsafe_allow_html=True
-        )
+        if st.button(f"Ver Mapa IRM Completo", key=f"btn_irm_{periodo}"):
+            with open(ruta_irm_full, 'r', encoding='utf-8') as f:
+                mapa_html = f.read()
+            components.html(mapa_html, height=600, scrolling=True)
 
         mapa_irm = hacer_mapa(
             gdf_irm, 'irm_prom', 'IRM por Estado',
@@ -565,15 +540,10 @@ def render_periodo(periodo, df, df_def):
                     gdf_def, 'defunciones', 'Defunciones por Estado',
                     COLOR_DEF, 'Defunciones:', f"def_full_{periodo}")
             mapa_def_temp.save(ruta_def_full)
-        st.markdown(
-            f'<a href="http://localhost:8502/mapa_def_full_{periodo}.html" '
-            f'target="_blank" style="display:inline-block;background:linear-gradient'
-            f'(135deg,#c0392b,#922b21);color:white;font-weight:700;padding:10px 22px;'
-            f'border-radius:8px;text-decoration:none;font-size:0.9rem;margin-bottom:10px;'
-            f'box-shadow:0 4px 15px rgba(192,57,43,0.3);">'
-            f'&#x26F6; Ver Mapa Defunciones Completo</a>',
-            unsafe_allow_html=True
-        )
+        if st.button(f"Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
+            with open(ruta_def_full, 'r', encoding='utf-8') as f:
+                mapa_html = f.read()
+            components.html(mapa_html, height=600, scrolling=True)
         if periodo == "2025":
             mapa_def = hacer_mapa_rangos_fijos(
                 gdf_def, 'defunciones', 'Defunciones por Estado',
