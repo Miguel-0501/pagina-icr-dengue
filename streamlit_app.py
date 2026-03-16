@@ -463,21 +463,25 @@ def render_periodo(periodo, df, df_def):
                 COLOR_IRM, 'IRM Promedio:', f"irm_full_{periodo}")
             mapa_irm_temp.save(ruta_irm_full)
 
-        modo_completo_irm = st.toggle(
-            "Ver mapa IRM completo",
-            key=f"toggle_irm_{periodo}"
-        )
+        if st.button("⛶ Ver Mapa IRM Completo", key=f"btn_irm_{periodo}"):
+            st.session_state[f'modal_irm_{periodo}'] = True
 
-        if modo_completo_irm:
-            with open(ruta_irm_full, 'r', encoding='utf-8') as f:
-                mapa_html = f.read()
-            components.html(mapa_html, height=600, scrolling=False)
-        else:
-            mapa_irm = hacer_mapa(
-                gdf_irm, 'irm_prom', 'IRM por Estado',
-                COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
-            st_folium(mapa_irm, width=680, height=430,
-                      returned_objects=[], key=f"mapa_irm_{periodo}")
+        if st.session_state.get(f'modal_irm_{periodo}', False):
+            @st.dialog("Mapa IRM - Vista Completa", width="large")
+            def modal_irm():
+                with open(ruta_irm_full, 'r', encoding='utf-8') as f:
+                    mapa_html = f.read()
+                components.html(mapa_html, height=650, scrolling=False)
+                if st.button("Cerrar", key=f"cerrar_irm_{periodo}"):
+                    st.session_state[f'modal_irm_{periodo}'] = False
+                    st.rerun()
+            modal_irm()
+
+        mapa_irm = hacer_mapa(
+            gdf_irm, 'irm_prom', 'IRM por Estado',
+            COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
+        st_folium(mapa_irm, width=680, height=430,
+                  returned_objects=[], key=f"mapa_irm_{periodo}")
 
     with col2:
         altura_irm = max(750, len(resumen_irm_graf) * 25)
@@ -543,26 +547,30 @@ def render_periodo(periodo, df, df_def):
                     COLOR_DEF, 'Defunciones:', f"def_full_{periodo}")
             mapa_def_temp.save(ruta_def_full)
 
-        modo_completo_def = st.toggle(
-            "Ver mapa defunciones completo",
-            key=f"toggle_def_{periodo}"
-        )
+        if st.button("⛶ Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
+            st.session_state[f'modal_def_{periodo}'] = True
 
-        if modo_completo_def:
-            with open(ruta_def_full, 'r', encoding='utf-8') as f:
-                mapa_html = f.read()
-            components.html(mapa_html, height=600, scrolling=False)
+        if st.session_state.get(f'modal_def_{periodo}', False):
+            @st.dialog("Mapa Defunciones - Vista Completa", width="large")
+            def modal_def():
+                with open(ruta_def_full, 'r', encoding='utf-8') as f:
+                    mapa_html = f.read()
+                components.html(mapa_html, height=650, scrolling=False)
+                if st.button("Cerrar", key=f"cerrar_def_{periodo}"):
+                    st.session_state[f'modal_def_{periodo}'] = False
+                    st.rerun()
+            modal_def()
+
+        if periodo == "2025":
+            mapa_def = hacer_mapa_rangos_fijos(
+                gdf_def, 'defunciones', 'Defunciones por Estado',
+                'Defunciones:', f"def_{periodo}")
         else:
-            if periodo == "2025":
-                mapa_def = hacer_mapa_rangos_fijos(
-                    gdf_def, 'defunciones', 'Defunciones por Estado',
-                    'Defunciones:', f"def_{periodo}")
-            else:
-                mapa_def = hacer_mapa(
-                    gdf_def, 'defunciones', 'Defunciones por Estado',
-                    COLOR_DEF, 'Defunciones:', f"def_{periodo}")
-            st_folium(mapa_def, width=680, height=430,
-                      returned_objects=[], key=f"mapa_def_{periodo}")
+            mapa_def = hacer_mapa(
+                gdf_def, 'defunciones', 'Defunciones por Estado',
+                COLOR_DEF, 'Defunciones:', f"def_{periodo}")
+        st_folium(mapa_def, width=680, height=430,
+                  returned_objects=[], key=f"mapa_def_{periodo}")
 
     with col4:
         altura_def = max(750, len(df_def_graf) * 25)
