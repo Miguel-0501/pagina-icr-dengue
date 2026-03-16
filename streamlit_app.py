@@ -456,24 +456,28 @@ def render_periodo(periodo, df, df_def):
 
     col1, col2 = st.columns(2)
     with col1:
-        # Boton pantalla completa IRM
-        # Guardar mapa IRM como HTML y abrir en nueva pestaña
-        ruta_irm_full = os.path.join(tempfile.gettempdir(), f'mapa_irm_full_{periodo}.html') 
+        ruta_irm_full = os.path.join(tempfile.gettempdir(), f'mapa_irm_full_{periodo}.html')
         if not os.path.exists(ruta_irm_full):
             mapa_irm_temp = hacer_mapa(
                 gdf_irm, 'irm_prom', 'IRM por Estado',
                 COLOR_IRM, 'IRM Promedio:', f"irm_full_{periodo}")
             mapa_irm_temp.save(ruta_irm_full)
-        if st.button(f"Ver Mapa IRM Completo", key=f"btn_irm_{periodo}"):
+
+        modo_completo_irm = st.toggle(
+            "Ver mapa IRM completo",
+            key=f"toggle_irm_{periodo}"
+        )
+
+        if modo_completo_irm:
             with open(ruta_irm_full, 'r', encoding='utf-8') as f:
                 mapa_html = f.read()
-            components.html(mapa_html, height=600, scrolling=True)
-
-        mapa_irm = hacer_mapa(
-            gdf_irm, 'irm_prom', 'IRM por Estado',
-            COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
-        st_folium(mapa_irm, width=680, height=430,
-                  returned_objects=[], key=f"mapa_irm_{periodo}")
+            components.html(mapa_html, height=600, scrolling=False)
+        else:
+            mapa_irm = hacer_mapa(
+                gdf_irm, 'irm_prom', 'IRM por Estado',
+                COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
+            st_folium(mapa_irm, width=680, height=430,
+                      returned_objects=[], key=f"mapa_irm_{periodo}")
 
     with col2:
         altura_irm = max(750, len(resumen_irm_graf) * 25)
@@ -527,8 +531,6 @@ def render_periodo(periodo, df, df_def):
 
     col3, col4 = st.columns(2)
     with col3:
-        # Boton pantalla completa Defunciones
-        # Guardar mapa defunciones como HTML y abrir en nueva pestaña
         ruta_def_full = os.path.join(tempfile.gettempdir(), f'mapa_def_full_{periodo}.html')
         if not os.path.exists(ruta_def_full):
             if periodo == "2025":
@@ -540,20 +542,27 @@ def render_periodo(periodo, df, df_def):
                     gdf_def, 'defunciones', 'Defunciones por Estado',
                     COLOR_DEF, 'Defunciones:', f"def_full_{periodo}")
             mapa_def_temp.save(ruta_def_full)
-        if st.button(f"Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
+
+        modo_completo_def = st.toggle(
+            "Ver mapa defunciones completo",
+            key=f"toggle_def_{periodo}"
+        )
+
+        if modo_completo_def:
             with open(ruta_def_full, 'r', encoding='utf-8') as f:
                 mapa_html = f.read()
-            components.html(mapa_html, height=600, scrolling=True)
-        if periodo == "2025":
-            mapa_def = hacer_mapa_rangos_fijos(
-                gdf_def, 'defunciones', 'Defunciones por Estado',
-                'Defunciones:', f"def_{periodo}")
+            components.html(mapa_html, height=600, scrolling=False)
         else:
-            mapa_def = hacer_mapa(
-                gdf_def, 'defunciones', 'Defunciones por Estado',
-                COLOR_DEF, 'Defunciones:', f"def_{periodo}")
-        st_folium(mapa_def, width=680, height=430,
-                  returned_objects=[], key=f"mapa_def_{periodo}")
+            if periodo == "2025":
+                mapa_def = hacer_mapa_rangos_fijos(
+                    gdf_def, 'defunciones', 'Defunciones por Estado',
+                    'Defunciones:', f"def_{periodo}")
+            else:
+                mapa_def = hacer_mapa(
+                    gdf_def, 'defunciones', 'Defunciones por Estado',
+                    COLOR_DEF, 'Defunciones:', f"def_{periodo}")
+            st_folium(mapa_def, width=680, height=430,
+                      returned_objects=[], key=f"mapa_def_{periodo}")
 
     with col4:
         altura_def = max(750, len(df_def_graf) * 25)
