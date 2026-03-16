@@ -458,7 +458,7 @@ def render_periodo(periodo, df, df_def):
     with col1:
         # Boton pantalla completa IRM
         # Guardar mapa IRM como HTML y abrir en nueva pestaña
-        ruta_irm_full = os.path.join(STATIC_DIR, f'mapa_irm_full_{periodo}.html') 
+        ruta_irm_full = os.path.join(tempfile.gettempdir(), f'mapa_irm_full_{periodo}.html') 
         if not os.path.exists(ruta_irm_full):
             mapa_irm_temp = hacer_mapa(
                 gdf_irm, 'irm_prom', 'IRM por Estado',
@@ -529,7 +529,7 @@ def render_periodo(periodo, df, df_def):
     with col3:
         # Boton pantalla completa Defunciones
         # Guardar mapa defunciones como HTML y abrir en nueva pestaña
-        ruta_def_full = os.path.join(STATIC_DIR, f'mapa_def_full_{periodo}.html')
+        ruta_def_full = os.path.join(tempfile.gettempdir(), f'mapa_def_full_{periodo}.html')
         if not os.path.exists(ruta_def_full):
             if periodo == "2025":
                 mapa_def_temp = hacer_mapa_rangos_fijos(
