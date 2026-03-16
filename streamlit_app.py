@@ -518,7 +518,7 @@ def render_periodo(periodo, df, df_def):
                        zerolinecolor='rgba(255,255,255,0.1)'),
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
-        st.plotly_chart(fig_irm, use_container_width=True,
+        st.plotly_chart(fig_irm, width='stretch',
                         key=f"graf_irm_{periodo}")
 
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
@@ -603,7 +603,7 @@ def render_periodo(periodo, df, df_def):
                        zerolinecolor='rgba(255,255,255,0.1)'),
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
-        st.plotly_chart(fig_def, use_container_width=True,
+        st.plotly_chart(fig_def, width='stretch',
                         key=f"graf_def_{periodo}")
 
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
@@ -654,7 +654,7 @@ def render_periodo(periodo, df, df_def):
         legend=dict(bgcolor='rgba(22,27,34,0.8)',
                     bordercolor='rgba(255,255,255,0.1)', borderwidth=1)
     )
-    st.plotly_chart(fig_sexo, use_container_width=True,
+    st.plotly_chart(fig_sexo, width='stretch',
                     key=f"graf_sexo_{periodo}")
 
 # ==========================
