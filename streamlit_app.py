@@ -11,7 +11,6 @@ import io
 import tempfile
 import streamlit.components.v1 as components
 
-
 # ==========================
 # Configuracion
 # ==========================
@@ -109,6 +108,16 @@ st.markdown("""
         background: #e1705555; 
         border-radius: 3px; 
     }
+
+    /* ── Responsivo movil ── */
+    @media (max-width: 768px) {
+        .block-container { padding: 1rem 1rem !important; }
+        h1 { font-size: 1.8rem !important; }
+        .seccion-titulo { font-size: 1.1rem !important; }
+        [data-testid="stMetricValue"] { font-size: 1.4rem !important; }
+        [data-testid="stMetricLabel"] { font-size: 0.75rem !important; }
+        iframe { width: 100% !important; min-height: 300px; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -141,8 +150,6 @@ sinos_shp = {
 }
 
 BASE     = os.path.dirname(__file__)
-
-
 SHP      = os.path.join(BASE, 'data', 'mexico_simple.gpkg')
 XLS      = os.path.join(BASE, 'data', 'Base de datos principal defunciones.xlsx')
 CSV_2224 = os.path.join(BASE, 'data', 'datos_2022_2024.parquet')
@@ -168,7 +175,6 @@ def cargar_csv(ruta):
 
 @st.cache_data
 def cargar_defunciones_excel(hojas):
-    """Carga defunciones desde el Excel segun las hojas del periodo."""
     conteo = {k: 0 for k in catalogo_ent}
     for hoja in hojas:
         df_a = pd.read_excel(XLS, sheet_name=hoja, engine='openpyxl')
@@ -182,9 +188,7 @@ def cargar_defunciones_excel(hojas):
 
 @st.cache_data
 def cargar_defunciones_csv(ruta):
-    """Carga defunciones desde el Parquet (para 2025)."""
     df = pd.read_parquet(ruta) if ruta.endswith('.parquet') else pd.read_csv(ruta)
-    # Asegurar que todos los 32 estados aparezcan aunque tengan 0
     conteo = {k: 0 for k in catalogo_ent}
     por_entidad = df[df['DEFUNCION'] == 1]['ENTIDAD_RES'].value_counts().to_dict()
     for cod, cant in por_entidad.items():
@@ -212,22 +216,15 @@ def cargar_shp():
 
 gdf_base = cargar_shp()
 
-# ==========================
-# Defunciones por periodo
-# ==========================
-# 2020-2024: Hoja1 a Hoja5
 def_2024 = cargar_defunciones_excel(['Hoja1','Hoja2','Hoja3','Hoja4','Hoja5'])
-# 2022-2024: Hoja3 a Hoja5
 def_2224 = cargar_defunciones_excel(['Hoja3','Hoja4','Hoja5'])
-# 2025: desde CSV
 def_2025 = cargar_defunciones_csv(CSV_2025)
 
 # ==========================
-# Funcion: mapa Folium
+# Funciones: mapas Folium
 # ==========================
 def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
     _, bins = pd.qcut(gdf[col_valor].dropna(), q=4, retbins=True, duplicates='drop')
-
     es_entero = gdf[col_valor].dropna().apply(lambda x: float(x) == int(x)).all()
     if es_entero:
         cats = [
@@ -243,7 +240,6 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
             f"Alto ({bins[2]:.3f} - {bins[3]:.3f})",
             f"Critico ({bins[3]:.3f} - {bins[4]:.3f})"
         ]
-
     colores_cat = dict(zip(cats, paleta))
 
     def categorizar(v):
@@ -255,10 +251,8 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
 
     gdf = gdf.copy()
     gdf['categoria'] = gdf[col_valor].apply(categorizar)
-
     m = folium.Map(location=[23.5,-102.5], zoom_start=4,
                    tiles='CartoDB positron', scrollWheelZoom=False)
-
     folium.GeoJson(
         gdf,
         style_function=lambda f: {
@@ -273,7 +267,6 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
             style="background:#1a1a2e;color:white;font-size:13px;padding:8px;border-radius:6px;"
         )
     ).add_to(m)
-
     leyenda_items = "".join([
         f'<div style="margin:4px 0"><span style="display:inline-block;width:14px;height:14px;'
         f'background:{c};border-radius:3px;margin-right:6px;vertical-align:middle;"></span>{cat}</div>'
@@ -289,13 +282,10 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
     return m
 
 def hacer_mapa_rangos_fijos(gdf, col_valor, titulo, tooltip_alias, key_suffix):
-    """Mapa con rangos fijos para 2025"""
-
-    CAT_BAJO   = "Bajo (0)"
-    CAT_MEDIO  = "Medio (1 - 5)"
-    CAT_ALTO   = "Alto (6 - 10)"
+    CAT_BAJO    = "Bajo (0)"
+    CAT_MEDIO   = "Medio (1 - 5)"
+    CAT_ALTO    = "Alto (6 - 10)"
     CAT_CRITICO = "Critico (mas de 10)"
-
     colores_cat = {
         CAT_BAJO:    "#2ecc71",
         CAT_MEDIO:   "#f1c40f",
@@ -311,10 +301,8 @@ def hacer_mapa_rangos_fijos(gdf, col_valor, titulo, tooltip_alias, key_suffix):
 
     gdf = gdf.copy()
     gdf['categoria'] = gdf[col_valor].apply(categorizar)
-
     m = folium.Map(location=[23.5,-102.5], zoom_start=4,
                    tiles='CartoDB positron', scrollWheelZoom=False)
-
     folium.GeoJson(
         gdf,
         style_function=lambda f: {
@@ -330,13 +318,11 @@ def hacer_mapa_rangos_fijos(gdf, col_valor, titulo, tooltip_alias, key_suffix):
             style="background:#1a1a2e;color:white;font-size:13px;padding:8px;border-radius:6px;"
         )
     ).add_to(m)
-
     leyenda_items = "".join([
         f'<div style="margin:4px 0"><span style="display:inline-block;width:14px;height:14px;'
         f'background:{c};border-radius:3px;margin-right:6px;vertical-align:middle;"></span>{cat}</div>'
         for cat, c in colores_cat.items()
     ])
-
     m.get_root().html.add_child(folium.Element(
         '<div style="position:fixed;bottom:30px;left:20px;z-index:1000;'
         'background:rgba(13,17,23,0.92);padding:14px 18px;border-radius:10px;'
@@ -357,11 +343,12 @@ def render_periodo(periodo, df, df_def):
     irm_nacional    = df['Indice_Riesgo'].mean()
     tasa_mortalidad = total_def / total_casos * 100
 
-    # Metricas
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    # Metricas — 2 columnas en movil, 6 en escritorio
+    c1, c2, c3 = st.columns(3)
     c1.metric("Casos de Dengue",    f"{total_casos:,}")
     c2.metric("Defunciones",        f"{total_def:,}")
     c3.metric("IRM Promedio",       f"{irm_nacional:.3f}")
+    c4, c5, c6 = st.columns(3)
     c4.metric("Tasa Mortalidad",    f"{tasa_mortalidad:.2f}%")
     c5.metric("Estados Analizados", "32")
     c6.metric("Variables",          "16")
@@ -378,17 +365,14 @@ def render_periodo(periodo, df, df_def):
 
     lista_estados = sorted(df['ESTADO'].dropna().unique().tolist())
 
-# ==========================
-    # SECCION DESCARGA
+    # ==========================
+    # DESCARGA
     # ==========================
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
     st.markdown('<div class="seccion-titulo">Descargar Datos</div>',
                 unsafe_allow_html=True)
-
     st.markdown("Descarga el dataset completo de este periodo en formato CSV o Parquet.")
-
     col_d1, col_d2, col_d3 = st.columns([1, 1, 4])
-
     with col_d1:
         csv_bytes = df.to_csv(index=False).encode('utf-8')
         st.download_button(
@@ -398,9 +382,7 @@ def render_periodo(periodo, df, df_def):
             mime="text/csv",
             key=f"btn_csv_{periodo}"
         )
-
     with col_d2:
-        import io
         parquet_buffer = io.BytesIO()
         df.to_parquet(parquet_buffer, index=False)
         st.download_button(
@@ -417,7 +399,6 @@ def render_periodo(periodo, df, df_def):
     st.markdown('<div class="seccion-titulo">Indice de Riesgo de Mortalidad (IRM)</div>',
                 unsafe_allow_html=True)
 
-    # Filtros IRM
     fi1, fi2 = st.columns([3, 1])
     with fi1:
         estados_sel_irm = st.multiselect(
@@ -435,7 +416,6 @@ def render_periodo(periodo, df, df_def):
             key=f"año_irm_{periodo}"
         )
 
-    # Aplicar filtros al dataframe
     df_irm_filtrado = df.copy()
     if año_sel_irm != "Todos":
         df_irm_filtrado = df_irm_filtrado[
@@ -454,7 +434,7 @@ def render_periodo(periodo, df, df_def):
     gdf_irm = gdf_base.merge(
         resumen_irm_filtrado[['ENTIDAD_RES','irm_prom']], on='ENTIDAD_RES', how='left')
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     with col1:
         ruta_irm_full = os.path.join(tempfile.gettempdir(), f'mapa_irm_full_{periodo}.html')
         if not os.path.exists(ruta_irm_full):
@@ -480,7 +460,7 @@ def render_periodo(periodo, df, df_def):
         mapa_irm = hacer_mapa(
             gdf_irm, 'irm_prom', 'IRM por Estado',
             COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
-        st_folium(mapa_irm, width=680, height=430,
+        st_folium(mapa_irm, width="100%", height=430,
                   returned_objects=[], key=f"mapa_irm_{periodo}")
 
     with col2:
@@ -503,8 +483,7 @@ def render_periodo(periodo, df, df_def):
                        zerolinecolor='rgba(255,255,255,0.1)'),
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
-        st.plotly_chart(fig_irm, width='stretch',
-                        key=f"graf_irm_{periodo}")
+        st.plotly_chart(fig_irm, width='stretch', key=f"graf_irm_{periodo}")
 
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
@@ -514,7 +493,6 @@ def render_periodo(periodo, df, df_def):
     st.markdown('<div class="seccion-titulo">Defunciones Reales por Dengue</div>',
                 unsafe_allow_html=True)
 
-    # Filtros Defunciones
     fd1, fd2 = st.columns([3, 1])
     with fd1:
         estados_sel_def = st.multiselect(
@@ -533,7 +511,7 @@ def render_periodo(periodo, df, df_def):
     gdf_def = gdf_base.merge(
         df_def[['ENTIDAD_RES','defunciones']], on='ENTIDAD_RES', how='left')
 
-    col3, col4 = st.columns(2)
+    col3, col4 = st.columns([1, 1])
     with col3:
         ruta_def_full = os.path.join(tempfile.gettempdir(), f'mapa_def_full_{periodo}.html')
         if not os.path.exists(ruta_def_full):
@@ -569,7 +547,7 @@ def render_periodo(periodo, df, df_def):
             mapa_def = hacer_mapa(
                 gdf_def, 'defunciones', 'Defunciones por Estado',
                 COLOR_DEF, 'Defunciones:', f"def_{periodo}")
-        st_folium(mapa_def, width=680, height=430,
+        st_folium(mapa_def, width="100%", height=430,
                   returned_objects=[], key=f"mapa_def_{periodo}")
 
     with col4:
@@ -592,8 +570,7 @@ def render_periodo(periodo, df, df_def):
                        zerolinecolor='rgba(255,255,255,0.1)'),
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
-        st.plotly_chart(fig_def, width='stretch',
-                        key=f"graf_def_{periodo}")
+        st.plotly_chart(fig_def, width='stretch', key=f"graf_def_{periodo}")
 
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
@@ -603,7 +580,6 @@ def render_periodo(periodo, df, df_def):
     st.markdown('<div class="seccion-titulo">Defunciones por Sexo y Estado</div>',
                 unsafe_allow_html=True)
 
-    # Filtro sexo
     estados_sel_sexo = st.multiselect(
         "Filtrar estados:",
         options=lista_estados,
@@ -643,8 +619,7 @@ def render_periodo(periodo, df, df_def):
         legend=dict(bgcolor='rgba(22,27,34,0.8)',
                     bordercolor='rgba(255,255,255,0.1)', borderwidth=1)
     )
-    st.plotly_chart(fig_sexo, width='stretch',
-                    key=f"graf_sexo_{periodo}")
+    st.plotly_chart(fig_sexo, width='stretch', key=f"graf_sexo_{periodo}")
 
 # ==========================
 # HERO
@@ -684,10 +659,12 @@ st.markdown("""
         margin-top: 8px;
         font-family: Arial, sans-serif;
     ">
-        Analisis espacial · Variables climaticas, ambientales y sociodemograficas · México
+        Analisis espacial · Variables climaticas, ambientales y sociodemograficas · Mexico
     </p>
 </div>
 """, unsafe_allow_html=True)
+
+st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
 # ==========================
 # TABS POR PERIODO
