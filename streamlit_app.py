@@ -24,57 +24,78 @@ st.markdown("""
 <style>
     /* ── Fondo general ── */
     .stApp { 
-        background: linear-gradient(160deg, #1a0a0a 0%, #140d0d 50%, #1a0a08 100%);
-        color: #f0e6e6; 
+        background: #f8f4f4;
+        color: #2d1a1a; 
     }
     .block-container { padding: 2rem 2.5rem; }
 
     /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {
-        background: #221414;
+        background: white;
         border-radius: 12px;
-        padding: 6px;
-        gap: 6px;
-        border: 1px solid rgba(255,255,255,0.08);
+        padding: 8px;
+        gap: 8px;
+        border: 2px solid #e17055;
+        box-shadow: 0 4px 15px rgba(225,112,85,0.15);
     }
     .stTabs [data-baseweb="tab"] {
-        background: transparent;
+        background: #fff0ed;
         border-radius: 8px;
-        color: #b08080;
-        font-weight: 600;
+        color: #c0392b;
+        font-weight: 700;
         font-size: 1rem;
-        padding: 10px 28px;
-        border: none;
+        padding: 12px 32px;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background: #ffe0d9;
+        border-color: #e17055;
     }
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #d63031, #922b21) !important;
         color: white !important;
         box-shadow: 0 4px 15px rgba(214,48,49,0.4);
+        border-color: transparent !important;
+    }
+
+    /* ── Label de tabs ── */
+    .stTabs [data-baseweb="tab-list"]::before {
+        content: "Selecciona un periodo:";
+        display: block;
+        color: #c0392b;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        padding-left: 4px;
     }
 
     /* ── Metricas ── */
     [data-testid="stMetric"] {
-        background: linear-gradient(135deg, #221414, #2a1010);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: white;
+        border: 1px solid #f0d0c8;
         border-radius: 14px;
         padding: 20px 16px;
         text-align: center;
         transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(225,112,85,0.08);
     }
     [data-testid="stMetric"]:hover {
-        border-color: rgba(225,112,85,0.4);
+        border-color: #e17055;
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(225,112,85,0.15);
+        box-shadow: 0 8px 25px rgba(225,112,85,0.2);
     }
     [data-testid="stMetricLabel"] {
-        color: #b08080 !important;
+        color: #9e6050 !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
     [data-testid="stMetricValue"] {
-        color: #e17055 !important;
+        color: #d63031 !important;
         font-size: 1.9rem !important;
         font-weight: 800 !important;
     }
@@ -84,12 +105,12 @@ st.markdown("""
         font-size: 1.4rem;
         font-weight: 700;
         color: white;
-        background: linear-gradient(135deg, #3d1515, #221414);
-        border-left: 5px solid #e17055;
+        background: linear-gradient(135deg, #d63031, #c0392b);
+        border-left: 5px solid #922b21;
         border-radius: 0 10px 10px 0;
         padding: 14px 20px;
         margin: 2rem 0 1.2rem 0;
-        box-shadow: 0 4px 15px rgba(225,112,85,0.1);
+        box-shadow: 0 4px 15px rgba(214,48,49,0.2);
     }
 
     /* ── Separador ── */
@@ -97,16 +118,53 @@ st.markdown("""
         border: none;
         height: 2px;
         background: linear-gradient(90deg, 
-            transparent, #e1705544, #e1705588, #e1705544, transparent);
+            transparent, #e1705566, #e17055, #e1705566, transparent);
         margin: 2.5rem 0;
     }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #140d0d; }
+    ::-webkit-scrollbar-track { background: #f8f4f4; }
     ::-webkit-scrollbar-thumb { 
-        background: #e1705555; 
+        background: #e1705580; 
         border-radius: 3px; 
+    }
+
+    /* ── Inputs y selectbox ── */
+    .stSelectbox > div > div,
+    .stMultiSelect > div > div {
+        background: white !important;
+        border-color: #f0d0c8 !important;
+        color: #2d1a1a !important;
+    }
+
+    /* ── Botones ── */
+    .stButton > button {
+        background: linear-gradient(135deg, #d63031, #922b21);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(214,48,49,0.3);
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(214,48,49,0.4);
+    }
+
+    /* ── Download buttons ── */
+    .stDownloadButton > button {
+        background: white;
+        color: #d63031;
+        border: 2px solid #d63031;
+        border-radius: 8px;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+    .stDownloadButton > button:hover {
+        background: #d63031;
+        color: white;
     }
 
     /* ── Responsivo movil ── */
@@ -628,9 +686,9 @@ st.markdown("""
 <div style="padding: 70px 0 5px 0; margin-bottom: 5px;">
     <div style="
         display: inline-block;
-        background: linear-gradient(135deg, rgba(225,112,85,0.15), rgba(214,48,49,0.05));
-        border: 1px solid rgba(225,112,85,0.3);
-        color: #e17055;
+        background: linear-gradient(135deg, rgba(214,48,49,0.1), rgba(225,112,85,0.05));
+        border: 1px solid rgba(214,48,49,0.3);
+        color: #d63031;
         padding: 5px 16px;
         border-radius: 20px;
         font-size: 0.8rem;
@@ -648,13 +706,13 @@ st.markdown("""
         margin: 0;
         font-family: Arial, sans-serif;
         line-height: 1.2;
-        background: linear-gradient(135deg, #ffffff 0%, #e17055 50%, #d63031 100%);
+        background: linear-gradient(135deg, #2d1a1a 0%, #d63031 50%, #e17055 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     ">Indice de Riesgo de Mortalidad por Dengue</h1>
     <p style="
-        color: #b08080;
+        color: #9e6050;
         font-size: 1rem;
         margin-top: 8px;
         font-family: Arial, sans-serif;
@@ -663,8 +721,6 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
-
-st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
 # ==========================
 # TABS POR PERIODO
