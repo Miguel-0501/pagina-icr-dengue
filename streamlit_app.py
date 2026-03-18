@@ -718,7 +718,7 @@ st.markdown("""
         margin-bottom: 12px;
         font-family: Arial, sans-serif;
     ">
-        Salud Publica · Mexico · Dengue
+        Sistema de Análisis Espacial del Riesgo de Mortalidad por Dengue en México
     </div>
     <h1 style="
         font-size: 2.6rem;
@@ -737,7 +737,7 @@ st.markdown("""
         margin-top: 8px;
         font-family: Arial, sans-serif;
     ">
-        Analisis espacial · Variables climaticas, ambientales y sociodemograficas · Mexico
+        Plataforma web para el monitoreo epidemiológico del dengue en México, que integra datos clínicos, ambientales y sociodemográficos para generar visualizaciones y análisis espaciales del riesgo de mortalidad. El sistema utiliza técnicas de análisis multivariable y machine learning para construir un índice de riesgo territorial que facilita la interpretación de patrones epidemiológicos y apoya la toma de decisiones en salud pública.
     </p>
 </div>
 """, unsafe_allow_html=True)
