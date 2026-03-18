@@ -411,7 +411,7 @@ def render_periodo(periodo, df, df_def):
     c5.metric("Estados Analizados", "32")
     c6.metric("Variables",          "16")
 
-st.markdown('<hr class="separador">', unsafe_allow_html=True)
+    st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
     # Descripcion del IRM
     st.markdown("""
