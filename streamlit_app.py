@@ -214,52 +214,36 @@ st.markdown("""
         padding: 4px 8px !important;
         min-height: 38px !important;
     }
-            /* ── Multiselect fondo claro ── */
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
+    /* ── Multiselect completo ── */
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div,
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div:hover {
         background-color: white !important;
-        border-color: #f0d0c8 !important;
-        min-height: 38px !important;
-        max-height: 38px !important;
-    }
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] span {
-        color: #2d1a1a !important;
-        font-size: 0.85rem !important;
-        opacity: 1 !important;
-    }
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] input::placeholder {
-        color: #2d1a1a !important;
-        opacity: 1 !important;
-    }
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] [data-testid="stWidgetLabel"] {
-        color: #2d1a1a !important;
-    }
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] svg {
-        fill: #d63031 !important;
-    }
-    div[data-testid="stMultiSelect"] input {
-        color: #2d1a1a !important;
-        background: white !important;
-    }
-    /* Dropdown opciones */
-    div[data-baseweb="popover"] ul {
-        background: white !important;
-    }
-    div[data-baseweb="popover"] li {
-        color: #2d1a1a !important;
-        background: white !important;
-    }
-    div[data-baseweb="popover"] li:hover {
-        background: #fff0ed !important;
-    }
-            /* ── Reducir altura multiselect ── */
-    div[data-testid="stMultiSelect"] {
-        max-width: 100% !important;
-    }
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
+        border-color: #d63031 !important;
         min-height: 36px !important;
         max-height: 36px !important;
         padding: 0 8px !important;
         font-size: 0.85rem !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stMultiSelect"] * {
+        color: #2d1a1a !important;
+        font-size: 0.85rem !important;
+    }
+    div[data-testid="stMultiSelect"] input,
+    div[data-testid="stMultiSelect"] input::placeholder {
+        color: #2d1a1a !important;
+        opacity: 1 !important;
+        font-size: 0.85rem !important;
+    }
+    div[data-testid="stMultiSelect"] svg {
+        fill: #d63031 !important;
+    }
+    div[data-baseweb="popover"] * {
+        background: white !important;
+        color: #2d1a1a !important;
+    }
+    div[data-baseweb="popover"] li:hover {
+        background: #fff0ed !important;
     }
 </style>
 """, unsafe_allow_html=True)
