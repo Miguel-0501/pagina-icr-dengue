@@ -351,7 +351,22 @@ def_2025 = cargar_defunciones_csv(CSV_2025)
 # Funciones: mapas Folium
 # ==========================
 def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
-    _, bins = pd.qcut(gdf[col_valor].dropna(), q=4, retbins=True, duplicates='drop')
+    valores = gdf[col_valor].dropna()
+    valores_positivos = valores[valores > 0]
+
+    # Si hay muy pocos valores distintos usar rangos simples
+    if len(valores_positivos) < 4 or valores_positivos.nunique() < 4:
+        vmin = int(valores.min()) if valores.notna().any() else 0
+        vmax = int(valores.max()) if valores.notna().any() else 1
+        mid1 = vmin + (vmax - vmin) // 3
+        mid2 = vmin + 2 * (vmax - vmin) // 3
+        bins = np.array([vmin, mid1, mid2, vmax, vmax + 1], dtype=float)
+    else:
+        try:
+            _, bins = pd.qcut(valores, q=4, retbins=True, duplicates='drop')
+        except Exception:
+            vmin, vmax = valores.min(), valores.max()
+            bins = np.linspace(vmin, vmax, 5)
     es_entero = gdf[col_valor].dropna().apply(lambda x: float(x) == int(x)).all()
     if es_entero:
         cats = [
