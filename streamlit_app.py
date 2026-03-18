@@ -539,9 +539,13 @@ def render_periodo(periodo, df, df_def):
             title_font=dict(size=14, color='#d63031'),
             xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
                        zerolinecolor='rgba(214,48,49,0.2)',
-                       tickfont=dict(color='#2d1a1a')),
+                       tickfont=dict(color='#2d1a1a'),
+                       title_font=dict(color='#2d1a1a'),
+                       linecolor='#2d1a1a'),
             yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
-                       tickfont=dict(color='#2d1a1a'))
+                       tickfont=dict(color='#2d1a1a'),
+                       title_font=dict(color='#2d1a1a'),
+                       linecolor='#2d1a1a')
         )
         st.plotly_chart(fig_irm, width='stretch', key=f"graf_irm_{periodo}")
 
@@ -628,9 +632,13 @@ def render_periodo(periodo, df, df_def):
             title_font=dict(size=14, color='#d63031'),
             xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
                        zerolinecolor='rgba(214,48,49,0.2)',
-                       tickfont=dict(color='#2d1a1a')),
+                       tickfont=dict(color='#2d1a1a'),
+                       title_font=dict(color='#2d1a1a'),
+                       linecolor='#2d1a1a'),
             yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
-                       tickfont=dict(color='#2d1a1a'))
+                       tickfont=dict(color='#2d1a1a'),
+                       title_font=dict(color='#2d1a1a'),
+                       linecolor='#2d1a1a')
         )
         st.plotly_chart(fig_def, width='stretch', key=f"graf_def_{periodo}")
 
@@ -677,9 +685,13 @@ def render_periodo(periodo, df, df_def):
         title_font=dict(size=14, color='#d63031'),
         xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
                    zerolinecolor='rgba(214,48,49,0.2)',
-                   tickfont=dict(color='#2d1a1a')),
+                   tickfont=dict(color='#2d1a1a'),
+                   title_font=dict(color='#2d1a1a'),
+                   linecolor='#2d1a1a'),
         yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
-                   tickfont=dict(color='#2d1a1a')),
+                   tickfont=dict(color='#2d1a1a'),
+                   title_font=dict(color='#2d1a1a'),
+                   linecolor='#2d1a1a'),
         legend=dict(bgcolor='rgba(255,255,255,0.9)',
                     bordercolor='rgba(214,48,49,0.2)',
                     borderwidth=1,
