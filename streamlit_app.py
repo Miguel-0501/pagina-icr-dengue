@@ -214,7 +214,7 @@ CSV_2224 = os.path.join(BASE, 'data', 'datos_2022_2024.parquet')
 CSV_2024 = os.path.join(BASE, 'data', 'datos_2020_2024.parquet')
 CSV_2025 = os.path.join(BASE, 'data', 'datos_2025.parquet')
 
-TEMPLATE  = "plotly_dark"
+TEMPLATE  = "plotly_white"
 COLOR_IRM = ['#2ecc71','#f1c40f','#e67e22','#c0392b']
 COLOR_DEF = ['#2ecc71','#f1c40f','#e67e22','#c0392b']
 
@@ -533,13 +533,15 @@ def render_periodo(periodo, df, df_def):
         )
         fig_irm.update_layout(
             height=altura_irm, coloraxis_showscale=False,
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#0d1117',
-            font_color='#e6edf3', font_family='Arial',
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#faf5f5',
+            font_color='#2d1a1a', font_family='Arial',
             margin=dict(l=10,r=10,t=40,b=10), bargap=0.15,
-            title_font=dict(size=14, color='#58a6ff'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)',
-                       zerolinecolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
+            title_font=dict(size=14, color='#d63031'),
+            xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                       zerolinecolor='rgba(214,48,49,0.2)',
+                       tickfont=dict(color='#2d1a1a')),
+            yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                       tickfont=dict(color='#2d1a1a'))
         )
         st.plotly_chart(fig_irm, width='stretch', key=f"graf_irm_{periodo}")
 
@@ -620,13 +622,15 @@ def render_periodo(periodo, df, df_def):
         )
         fig_def.update_layout(
             height=altura_def, coloraxis_showscale=False,
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#0d1117',
-            font_color='#e6edf3', font_family='Arial',
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#faf5f5',
+            font_color='#2d1a1a', font_family='Arial',
             margin=dict(l=10,r=10,t=40,b=10), bargap=0.15,
-            title_font=dict(size=14, color='#58a6ff'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)',
-                       zerolinecolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
+            title_font=dict(size=14, color='#d63031'),
+            xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                       zerolinecolor='rgba(214,48,49,0.2)',
+                       tickfont=dict(color='#2d1a1a')),
+            yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                       tickfont=dict(color='#2d1a1a'))
         )
         st.plotly_chart(fig_def, width='stretch', key=f"graf_def_{periodo}")
 
@@ -667,15 +671,19 @@ def render_periodo(periodo, df, df_def):
     altura_sexo = max(900, len(orden_estados) * 35)
     fig_sexo.update_layout(
         height=altura_sexo,
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#0d1117',
-        font_color='#e6edf3', font_family='Arial',
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#faf5f5',
+        font_color='#2d1a1a', font_family='Arial',
         margin=dict(l=10,r=10,t=40,b=10), bargap=0.2,
-        title_font=dict(size=14, color='#58a6ff'),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)',
-                   zerolinecolor='rgba(255,255,255,0.1)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-        legend=dict(bgcolor='rgba(22,27,34,0.8)',
-                    bordercolor='rgba(255,255,255,0.1)', borderwidth=1)
+        title_font=dict(size=14, color='#d63031'),
+        xaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                   zerolinecolor='rgba(214,48,49,0.2)',
+                   tickfont=dict(color='#2d1a1a')),
+        yaxis=dict(gridcolor='rgba(214,48,49,0.1)',
+                   tickfont=dict(color='#2d1a1a')),
+        legend=dict(bgcolor='rgba(255,255,255,0.9)',
+                    bordercolor='rgba(214,48,49,0.2)',
+                    borderwidth=1,
+                    font=dict(color='#2d1a1a'))
     )
     st.plotly_chart(fig_sexo, width='stretch', key=f"graf_sexo_{periodo}")
 
