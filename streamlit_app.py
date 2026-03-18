@@ -214,6 +214,35 @@ st.markdown("""
         padding: 4px 8px !important;
         min-height: 38px !important;
     }
+            /* ── Multiselect fondo claro ── */
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
+        background-color: white !important;
+        border-color: #f0d0c8 !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+    }
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] span {
+        color: #2d1a1a !important;
+        font-size: 0.85rem !important;
+    }
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] svg {
+        fill: #d63031 !important;
+    }
+    div[data-testid="stMultiSelect"] input {
+        color: #2d1a1a !important;
+        background: white !important;
+    }
+    /* Dropdown opciones */
+    div[data-baseweb="popover"] ul {
+        background: white !important;
+    }
+    div[data-baseweb="popover"] li {
+        color: #2d1a1a !important;
+        background: white !important;
+    }
+    div[data-baseweb="popover"] li:hover {
+        background: #fff0ed !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
