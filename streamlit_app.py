@@ -579,7 +579,7 @@ def render_periodo(periodo, df, df_def):
     fi1, fi2 = st.columns([3, 1])
     with fi1:
         estados_sel_irm = st.multiselect(
-            "Filtrar por estado (el mapa resaltara los estados seleccionados en la grafica):",
+            "Filtrar por estado (el mapa resaltará los estados seleccionados en la gráfica):",
             options=lista_estados,
             default=[],
             placeholder="Todos los estados (sin filtro)",
@@ -685,23 +685,59 @@ def render_periodo(periodo, df, df_def):
     st.markdown('<div class="seccion-titulo">Defunciones Reales por Dengue</div>',
                 unsafe_allow_html=True)
 
+    st.markdown("""
+    <style>
+    div[data-testid="stRadio"] p {
+        color: #2d1a1a !important;
+        font-weight: 600 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     fd1, fd2 = st.columns([3, 1])
     with fd1:
         estados_sel_def = st.multiselect(
-            "Filtrar estados:",
+            "Filtrar por estado:",
             options=lista_estados,
             default=[],
             placeholder="Todos los estados (sin filtro)",
             key=f"filtro_def_{periodo}"
         )
+    with fd2:
+        años_def = sorted(df['ANIO'].dropna().unique().astype(int).tolist())
+        año_sel_def = st.radio(
+            "Filtrar por año:",
+            options=["Todos"] + años_def,
+            horizontal=True,
+            key=f"año_def_{periodo}"
+        )
+
+    # Calcular defunciones filtradas por año desde el CSV
+    df_def_filtrado = df.copy()
+    if año_sel_def != "Todos":
+        df_def_filtrado = df_def_filtrado[
+            df_def_filtrado['ANIO'] == int(año_sel_def)]
+
+    # Recalcular defunciones por estado con el año filtrado
+    conteo_def = {k: 0 for k in catalogo_ent}
+    por_entidad = df_def_filtrado[df_def_filtrado['DEFUNCION'] == 1][
+        'ENTIDAD_RES'].value_counts().to_dict()
+    for cod, cant in por_entidad.items():
+        if cod in conteo_def:
+            conteo_def[cod] = cant
+
+    df_def_periodo = pd.DataFrame([
+        {'ENTIDAD_RES': k, 'ESTADO': catalogo_ent[k], 'defunciones': v}
+        for k, v in conteo_def.items()
+    ])
 
     if estados_sel_def:
-        df_def_graf = df_def[df_def['ESTADO'].isin(estados_sel_def)]
+        df_def_graf = df_def_periodo[df_def_periodo['ESTADO'].isin(estados_sel_def)]
     else:
-        df_def_graf = df_def
+        df_def_graf = df_def_periodo
 
     gdf_def = gdf_base.merge(
-        df_def[['ENTIDAD_RES','defunciones']], on='ENTIDAD_RES', how='left')
+        df_def_periodo[['ENTIDAD_RES','defunciones']], on='ENTIDAD_RES', how='left')
 
     col3, col4 = st.columns([1, 1])
     with col3:
@@ -717,7 +753,7 @@ def render_periodo(periodo, df, df_def):
                     COLOR_DEF, 'Defunciones:', f"def_full_{periodo}")
             mapa_def_temp.save(ruta_def_full)
 
-        if st.button("⛶ Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
+        if st.button("Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
             st.session_state[f'modal_def_{periodo}'] = True
 
         if st.session_state.get(f'modal_def_{periodo}', False):
@@ -731,7 +767,7 @@ def render_periodo(periodo, df, df_def):
                     st.rerun()
             modal_def()
 
-        if periodo == "2025":
+        if periodo == "2025" and año_sel_def == "Todos":
             mapa_def = hacer_mapa_rangos_fijos(
                 gdf_def, 'defunciones', 'Defunciones por Estado',
                 'Defunciones:', f"def_{periodo}")
@@ -749,7 +785,8 @@ def render_periodo(periodo, df, df_def):
             x='defunciones', y='ESTADO', orientation='h',
             color='defunciones', color_continuous_scale=COLOR_DEF,
             labels={'defunciones':'Defunciones','ESTADO':''},
-            title=f'Defunciones Acumuladas por Estado ({periodo})',
+            title=f'Defunciones por Estado ({periodo}'
+                  + (f' - {año_sel_def}' if año_sel_def != "Todos" else '') + ')',
             template=TEMPLATE
         )
         fig_def.update_layout(
