@@ -556,6 +556,14 @@ def render_periodo(periodo, df, df_def):
         )
     with fi2:
         años_disponibles = sorted(df['ANIO'].dropna().unique().astype(int).tolist())
+        st.markdown("""
+        <style>
+        div[data-testid="stRadio"] p {
+            color: #2d1a1a !important;
+            font-weight: 600 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         año_sel_irm = st.radio(
             "Filtrar por año:",
             options=["Todos"] + años_disponibles,
