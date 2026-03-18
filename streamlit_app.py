@@ -514,16 +514,14 @@ def render_periodo(periodo, df, df_def):
             font-size: 1.2rem;
             font-weight: 800;
             margin: 0 0 12px 0;
-        ">IRM — Indice de Riesgo de Mortalidad por Dengue</h3>
+        ">IRM — Índice de Riesgo de Mortalidad por Dengue</h3>
         <p style="
             color: #4a2020;
             font-size: 0.95rem;
             line-height: 1.7;
             margin: 0 0 10px 0;
         ">
-            El IRM es un indice compuesto que mide el riesgo relativo de mortalidad 
-            por dengue en Mexico, integrando variables clinicas, ambientales y 
-            sociodemograficas.
+            El IRM es un índice compuesto que mide el riesgo relativo de mortalidad por dengue en México, integrando variables clínicas, ambientales y sociodemográficas.
         </p>
         <p style="
             color: #4a2020;
@@ -910,7 +908,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-    ">Indice de Riesgo de Mortalidad por Dengue</h1>
+    ">Índice de Riesgo de Mortalidad por Dengue</h1>
     <p style="
         color: #9e6050;
         font-size: 1rem;
