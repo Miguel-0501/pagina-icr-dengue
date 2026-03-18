@@ -411,6 +411,50 @@ def render_periodo(periodo, df, df_def):
     c5.metric("Estados Analizados", "32")
     c6.metric("Variables",          "16")
 
+st.markdown('<hr class="separador">', unsafe_allow_html=True)
+
+    # Descripcion del IRM
+    st.markdown("""
+    <div style="
+        background: white;
+        border: 1px solid #f0d0c8;
+        border-left: 5px solid #d63031;
+        border-radius: 0 12px 12px 0;
+        padding: 24px 28px;
+        margin: 0 0 1rem 0;
+        box-shadow: 0 2px 10px rgba(214,48,49,0.08);
+        font-family: Arial, sans-serif;
+    ">
+        <h3 style="
+            color: #d63031;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+        ">IRM — Indice de Riesgo de Mortalidad por Dengue</h3>
+        <p style="
+            color: #4a2020;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0 0 10px 0;
+        ">
+            El IRM es un indice compuesto que mide el riesgo relativo de mortalidad 
+            por dengue en Mexico, integrando variables clinicas, ambientales y 
+            sociodemograficas.
+        </p>
+        <p style="
+            color: #4a2020;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0;
+        ">
+            Fue construido mediante un analisis multivariable utilizando machine learning, 
+            donde las variables fueron seleccionadas y ponderadas segun su importancia 
+            (criterio de Gini en arboles de decision). El indice final permite identificar 
+            territorios con mayor riesgo y analizar patrones espaciales de la enfermedad.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
     resumen_irm = df.groupby(['ENTIDAD_RES','ESTADO']).agg(
@@ -742,9 +786,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ==========================
 # TABS POR PERIODO
-# ==========================
 tab1, tab2, tab3 = st.tabs(["2020-2024", "2022-2024", "2025"])
 
 with tab1:
