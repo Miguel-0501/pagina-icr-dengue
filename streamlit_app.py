@@ -176,6 +176,29 @@ st.markdown("""
         [data-testid="stMetricLabel"] { font-size: 0.75rem !important; }
         iframe { width: 100% !important; min-height: 300px; }
     }
+            /* ── Radio buttons como botones ── */
+    div[data-testid="stRadio"] > div {
+        gap: 8px;
+    }
+    div[data-testid="stRadio"] label {
+        background: white;
+        border: 2px solid #f0d0c8;
+        border-radius: 8px;
+        padding: 6px 14px;
+        color: #d63031;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    div[data-testid="stRadio"] label:hover {
+        border-color: #d63031;
+        background: #fff0ed;
+    }
+    div[data-testid="stRadio"] label[data-checked="true"] {
+        background: #d63031;
+        border-color: #d63031;
+        color: white;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -518,9 +541,10 @@ def render_periodo(periodo, df, df_def):
         )
     with fi2:
         años_disponibles = sorted(df['ANIO'].dropna().unique().astype(int).tolist())
-        año_sel_irm = st.selectbox(
-            "Filtrar por año (actualiza mapa y grafica):",
+        año_sel_irm = st.radio(
+            "Filtrar por año:",
             options=["Todos"] + años_disponibles,
+            horizontal=True,
             key=f"año_irm_{periodo}"
         )
 
