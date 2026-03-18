@@ -185,10 +185,16 @@ st.markdown("""
         border: 2px solid #f0d0c8;
         border-radius: 8px;
         padding: 6px 14px;
-        color: #d63031;
+        color: #2d1a1a !important;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
+    }
+    div[data-testid="stRadio"] label span {
+        color: #2d1a1a !important;
+    }
+    div[data-testid="stRadio"] label[data-checked="true"] span {
+        color: white !important;
     }
     div[data-testid="stRadio"] label:hover {
         border-color: #d63031;
@@ -198,6 +204,15 @@ st.markdown("""
         background: #d63031;
         border-color: #d63031;
         color: white;
+    }
+            /* ── Multiselect mas pequeno ── */
+    div[data-testid="stMultiSelect"] > div {
+        min-height: 38px !important;
+        font-size: 0.85rem !important;
+    }
+    div[data-testid="stMultiSelect"] > div > div {
+        padding: 4px 8px !important;
+        min-height: 38px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -525,7 +540,7 @@ def render_periodo(periodo, df, df_def):
     <div style="background:#fff5f5;border:1px solid #f0d0c8;border-radius:10px;
         padding:12px 16px;margin-bottom:12px;font-family:Arial,sans-serif;">
         <span style="color:#d63031;font-weight:700;font-size:0.85rem;">
-            FILTROS — Afectan tanto el mapa como la grafica
+            Filtros — Selecciona estados o años para actualizar el mapa y la gráfica
         </span>
     </div>
     """, unsafe_allow_html=True)
