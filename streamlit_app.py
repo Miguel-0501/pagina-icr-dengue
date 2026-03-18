@@ -22,10 +22,17 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    /* ── Google Font Roboto ── */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap');
+
     /* ── Fondo general ── */
     .stApp { 
         background: #f8f4f4;
-        color: #2d1a1a; 
+        color: #2d1a1a;
+        font-family: 'Roboto', sans-serif !important;
+    }
+    * {
+        font-family: 'Roboto', sans-serif !important;
     }
     .block-container { padding: 2rem 2.5rem; }
 
