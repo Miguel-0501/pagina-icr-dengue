@@ -352,22 +352,21 @@ def_2025 = cargar_defunciones_csv(CSV_2025)
 # ==========================
 def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
     valores = gdf[col_valor].dropna()
-    valores_positivos = valores[valores > 0]
 
-    # Si hay muy pocos valores distintos usar rangos simples
-    if len(valores_positivos) < 4 or valores_positivos.nunique() < 4:
-        vmin = int(valores.min()) if valores.notna().any() else 0
-        vmax = int(valores.max()) if valores.notna().any() else 1
-        mid1 = vmin + (vmax - vmin) // 3
-        mid2 = vmin + 2 * (vmax - vmin) // 3
-        bins = np.array([vmin, mid1, mid2, vmax, vmax + 1], dtype=float)
-    else:
-        try:
-            _, bins = pd.qcut(valores, q=4, retbins=True, duplicates='drop')
-        except Exception:
-            vmin, vmax = valores.min(), valores.max()
-            bins = np.linspace(vmin, vmax, 5)
-    es_entero = gdf[col_valor].dropna().apply(lambda x: float(x) == int(x)).all()
+    # Calcular bins de forma segura
+    try:
+        _, bins = pd.qcut(valores, q=4, retbins=True, duplicates='drop')
+        # Asegurar que siempre tengamos exactamente 5 puntos
+        if len(bins) < 5:
+            raise ValueError("Pocos valores unicos")
+    except Exception:
+        vmin = float(valores.min()) if len(valores) > 0 else 0.0
+        vmax = float(valores.max()) if len(valores) > 0 else 1.0
+        if vmin == vmax:
+            vmax = vmin + 1
+        bins = np.linspace(vmin, vmax, 5)
+
+    es_entero = valores.apply(lambda x: float(x) == int(x)).all()
     if es_entero:
         cats = [
             f"Bajo ({int(bins[0])} - {int(bins[1])})",
@@ -382,6 +381,7 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
             f"Alto ({bins[2]:.3f} - {bins[3]:.3f})",
             f"Critico ({bins[3]:.3f} - {bins[4]:.3f})"
         ]
+
     colores_cat = dict(zip(cats, paleta))
 
     def categorizar(v):
