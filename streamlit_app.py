@@ -447,10 +447,7 @@ def render_periodo(periodo, df, df_def):
             line-height: 1.7;
             margin: 0;
         ">
-            Fue construido mediante un analisis multivariable utilizando machine learning, 
-            donde las variables fueron seleccionadas y ponderadas segun su importancia 
-            (criterio de Gini en arboles de decision). El indice final permite identificar 
-            territorios con mayor riesgo y analizar patrones espaciales de la enfermedad.
+            Se construyó mediante un análisis multivariable utilizando machine learning, donde las variables fueron seleccionadas y ponderadas según su importancia (criterio de Gini en árboles de decisión El índice final permite identificar territorios con mayor riesgo y analizar patrones espaciales de la enfermedad.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -501,10 +498,19 @@ def render_periodo(periodo, df, df_def):
     st.markdown('<div class="seccion-titulo">Indice de Riesgo de Mortalidad (IRM)</div>',
                 unsafe_allow_html=True)
 
+    st.markdown("""
+    <div style="background:#fff5f5;border:1px solid #f0d0c8;border-radius:10px;
+        padding:12px 16px;margin-bottom:12px;font-family:Arial,sans-serif;">
+        <span style="color:#d63031;font-weight:700;font-size:0.85rem;">
+            FILTROS — Afectan tanto el mapa como la grafica
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
     fi1, fi2 = st.columns([3, 1])
     with fi1:
         estados_sel_irm = st.multiselect(
-            "Filtrar estados:",
+            "Filtrar por estado (el mapa resaltara los estados seleccionados en la grafica):",
             options=lista_estados,
             default=[],
             placeholder="Todos los estados (sin filtro)",
@@ -513,7 +519,7 @@ def render_periodo(periodo, df, df_def):
     with fi2:
         años_disponibles = sorted(df['ANIO'].dropna().unique().astype(int).tolist())
         año_sel_irm = st.selectbox(
-            "Año:",
+            "Filtrar por año (actualiza mapa y grafica):",
             options=["Todos"] + años_disponibles,
             key=f"año_irm_{periodo}"
         )
