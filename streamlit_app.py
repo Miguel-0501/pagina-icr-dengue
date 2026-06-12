@@ -15,7 +15,7 @@ import streamlit.components.v1 as components
 # Configuracion
 # ==========================
 st.set_page_config(
-    page_title="Analisis IRM - Dengue Mexico",
+    page_title="Analisis ICR-Dengue - Mexico",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -496,7 +496,7 @@ def render_periodo(periodo, df, df_def):
     c1, c2, c3 = st.columns(3)
     c1.metric("Casos de Dengue",    f"{total_casos:,}")
     c2.metric("Defunciones",        f"{total_def:,}")
-    c3.metric("IRM Promedio",       f"{irm_nacional:.3f}")
+    c3.metric("ICR-Dengue Promedio",       f"{irm_nacional:.3f}")
     c4, c5, c6 = st.columns(3)
     c4.metric("Tasa Mortalidad",    f"{tasa_mortalidad:.2f}%")
     c5.metric("Estados Analizados", "32")
@@ -504,7 +504,7 @@ def render_periodo(periodo, df, df_def):
 
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
-    # Descripcion del IRM
+    # Descripcion del ICR-Dengue
     st.markdown("""
     <div style="
         background: white;
@@ -521,14 +521,14 @@ def render_periodo(periodo, df, df_def):
             font-size: 1.2rem;
             font-weight: 800;
             margin: 0 0 12px 0;
-        ">IRM — Índice de Riesgo de Mortalidad por Dengue</h3>
+        ">ICR-Dengue — Índice Compuesto de Riesgo de Mortalidad por Dengue</h3>
         <p style="
             color: #4a2020;
             font-size: 0.95rem;
             line-height: 1.7;
             margin: 0 0 10px 0;
         ">
-            El IRM es un índice compuesto que mide el riesgo relativo de mortalidad por dengue en México, integrando variables clínicas, ambientales y sociodemográficas.
+            El ICR-Dengue es un índice compuesto que mide el riesgo relativo de mortalidad por dengue en México, integrando variables clínicas, ambientales y sociodemográficas.
         </p>
         <p style="
             color: #4a2020;
@@ -536,7 +536,7 @@ def render_periodo(periodo, df, df_def):
             line-height: 1.7;
             margin: 0;
         ">
-            Se construyó mediante un análisis multivariable utilizando machine learning, donde las variables fueron seleccionadas y ponderadas según su importancia (criterio de Gini en árboles de decisión El índice final permite identificar territorios con mayor riesgo y analizar patrones espaciales de la enfermedad.
+            Se construyó mediante un análisis multivariable utilizando machine learning, donde las variables fueron seleccionadas y ponderadas según su importancia (criterio de Gini en árboles de decisión). El índice final permite identificar territorios con mayor riesgo y analizar patrones espaciales de la enfermedad.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -582,9 +582,9 @@ def render_periodo(periodo, df, df_def):
         )
 
     # ==========================
-    # SECCION IRM
+    # SECCION ICR-Dengue
     # ==========================
-    st.markdown('<div class="seccion-titulo">Indice de Riesgo de Mortalidad (IRM)</div>',
+    st.markdown('<div class="seccion-titulo">Índice Compuesto de Riesgo de Mortalidad (ICR-Dengue)</div>',
                 unsafe_allow_html=True)
 
     st.markdown("""
@@ -645,15 +645,15 @@ def render_periodo(periodo, df, df_def):
         ruta_irm_full = os.path.join(tempfile.gettempdir(), f'mapa_irm_full_{periodo}.html')
         if not os.path.exists(ruta_irm_full):
             mapa_irm_temp = hacer_mapa(
-                gdf_irm, 'irm_prom', 'IRM por Estado',
-                COLOR_IRM, 'IRM Promedio:', f"irm_full_{periodo}")
+                gdf_irm, 'irm_prom', 'ICR-Dengue por Estado',
+                COLOR_IRM, 'ICR-Dengue Promedio:', f"irm_full_{periodo}")
             mapa_irm_temp.save(ruta_irm_full)
 
-        if st.button("⛶ Ver Mapa IRM Completo", key=f"btn_irm_{periodo}"):
+        if st.button("⛶ Ver Mapa ICR-Dengue Completo", key=f"btn_irm_{periodo}"):
             st.session_state[f'modal_irm_{periodo}'] = True
 
         if st.session_state.get(f'modal_irm_{periodo}', False):
-            @st.dialog("Mapa IRM - Vista Completa", width="large")
+            @st.dialog("Mapa ICR-Dengue - Vista Completa", width="large")
             def modal_irm():
                 with open(ruta_irm_full, 'r', encoding='utf-8') as f:
                     mapa_html = f.read()
@@ -664,8 +664,8 @@ def render_periodo(periodo, df, df_def):
             modal_irm()
 
         mapa_irm = hacer_mapa(
-            gdf_irm, 'irm_prom', 'IRM por Estado',
-            COLOR_IRM, 'IRM Promedio:', f"irm_{periodo}")
+            gdf_irm, 'irm_prom', 'ICR-Dengue por Estado',
+            COLOR_IRM, 'ICR-Dengue Promedio:', f"irm_{periodo}")
         st_folium(mapa_irm, width="100%", height=430,
                   returned_objects=[], key=f"mapa_irm_{periodo}")
 
@@ -675,8 +675,8 @@ def render_periodo(periodo, df, df_def):
             resumen_irm_graf.sort_values('irm_prom', ascending=True),
             x='irm_prom', y='ESTADO', orientation='h',
             color='irm_prom', color_continuous_scale=COLOR_IRM,
-            labels={'irm_prom':'IRM Promedio','ESTADO':''},
-            title=f'IRM Promedio por Estado ({periodo})',
+            labels={'irm_prom':'ICR-Dengue Promedio','ESTADO':''},
+            title=f'ICR-Dengue Promedio por Estado ({periodo})',
             template=TEMPLATE
         )
         fig_irm.update_layout(
@@ -915,7 +915,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-    ">Índice de Riesgo de Mortalidad por Dengue</h1>
+    ">Índice Compuesto de Riesgo de Mortalidad por Dengue (ICR-Dengue)</h1>
     <p style="
         color: #9e6050;
         font-size: 1rem;
