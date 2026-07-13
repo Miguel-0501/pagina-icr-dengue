@@ -276,6 +276,13 @@ catalogo_ent = {
     31:"Yucatan", 32:"Zacatecas"
 }
 
+poblacion = {
+    1:1510839, 2:3948201, 3:849224, 4:950291, 5:3197122, 6:745122, 7:5715260, 8:3741869,
+    9:9237644, 10:1913774, 11:6422483, 12:3599955, 13:3264395, 14:8507662, 15:17379644, 16:4830267,
+    17:2002754, 18:1252690, 19:6095498, 20:4204445, 21:6705217, 22:2419819, 23:1898241, 24:2871697,
+    25:3079773, 26:3024147, 27:2440449, 28:3595971, 29:1342977, 30:8169287, 31:2363123, 32:1698252,
+}
+
 sinos_shp = {
     normaliza("Coahuila de Zaragoza"):            normaliza("Coahuila"),
     normaliza("Michoacan de Ocampo"):             normaliza("Michoacan"),
@@ -291,8 +298,8 @@ CSV_2024 = os.path.join(BASE, 'data', 'datos_2020_2024.parquet')
 CSV_2025 = os.path.join(BASE, 'data', 'datos_2025.parquet')
 
 TEMPLATE  = "plotly_white"
-COLOR_IRM = ['#2ecc71','#f1c40f','#e67e22','#c0392b']
-COLOR_DEF = ['#2ecc71','#f1c40f','#e67e22','#c0392b']
+COLOR_IRM = ['#ffffb2','#fecc5c','#fd8d3c','#e31a1c']
+COLOR_DEF = ['#ffffb2','#fecc5c','#fd8d3c','#e31a1c']
 
 # ==========================
 # Cargar datos
@@ -428,58 +435,6 @@ def hacer_mapa(gdf, col_valor, titulo, paleta, tooltip_alias, key_suffix):
         border:1px solid rgba(255,255,255,0.1);">
         <b style="font-size:13px;">{titulo}</b><br><br>{leyenda_items}
     </div>"""))
-    return m
-
-def hacer_mapa_rangos_fijos(gdf, col_valor, titulo, tooltip_alias, key_suffix):
-    CAT_BAJO    = "Bajo (0)"
-    CAT_MEDIO   = "Medio (1 - 5)"
-    CAT_ALTO    = "Alto (6 - 10)"
-    CAT_CRITICO = "Critico (mas de 10)"
-    colores_cat = {
-        CAT_BAJO:    "#2ecc71",
-        CAT_MEDIO:   "#f1c40f",
-        CAT_ALTO:    "#e67e22",
-        CAT_CRITICO: "#c0392b"
-    }
-
-    def categorizar(v):
-        if pd.isna(v) or v <= 0: return CAT_BAJO
-        if v <= 5:  return CAT_MEDIO
-        if v <= 10: return CAT_ALTO
-        return CAT_CRITICO
-
-    gdf = gdf.copy()
-    gdf['categoria'] = gdf[col_valor].apply(categorizar)
-    m = folium.Map(location=[23.5,-102.5], zoom_start=4,
-                   tiles='CartoDB positron', scrollWheelZoom=False)
-    folium.GeoJson(
-        gdf,
-        style_function=lambda f: {
-            'fillColor': colores_cat.get(
-                f['properties'].get('categoria', CAT_BAJO), '#bdc3c7'),
-            'color': '#2c3e50', 'weight': 1.0, 'fillOpacity': 0.78
-        },
-        highlight_function=lambda f: {'fillOpacity':0.95, 'weight':2.5},
-        tooltip=folium.GeoJsonTooltip(
-            fields=['name', col_valor, 'categoria'],
-            aliases=['Estado:', tooltip_alias, 'Categoria:'],
-            localize=True, sticky=True,
-            style="background:#1a1a2e;color:white;font-size:13px;padding:8px;border-radius:6px;"
-        )
-    ).add_to(m)
-    leyenda_items = "".join([
-        f'<div style="margin:4px 0"><span style="display:inline-block;width:14px;height:14px;'
-        f'background:{c};border-radius:3px;margin-right:6px;vertical-align:middle;"></span>{cat}</div>'
-        for cat, c in colores_cat.items()
-    ])
-    m.get_root().html.add_child(folium.Element(
-        '<div style="position:fixed;bottom:30px;left:20px;z-index:1000;'
-        'background:rgba(13,17,23,0.92);padding:14px 18px;border-radius:10px;'
-        'color:white;font-family:Arial;font-size:12px;'
-        'border:1px solid rgba(255,255,255,0.1);">'
-        f'<b style="font-size:13px;">{titulo}</b><br><br>{leyenda_items}'
-        '</div>'
-    ))
     return m
 
 # ==========================
@@ -702,8 +657,12 @@ def render_periodo(periodo, df, df_def):
     # ==========================
     # SECCION DEFUNCIONES
     # ==========================
-    st.markdown('<div class="seccion-titulo">Defunciones Reales por Dengue</div>',
+    st.markdown('<div class="seccion-titulo">Tasa de Mortalidad por Dengue (ajustada por población)</div>',
                 unsafe_allow_html=True)
+    st.markdown(
+        "Defunciones por dengue ajustadas por la población de cada estado "
+        "(tasa por 100,000 habitantes), la misma métrica utilizada en la validación del manuscrito."
+    )
 
     st.markdown("""
     <style>
@@ -750,6 +709,9 @@ def render_periodo(periodo, df, df_def):
         {'ENTIDAD_RES': k, 'ESTADO': catalogo_ent[k], 'defunciones': v}
         for k, v in conteo_def.items()
     ])
+    df_def_periodo['poblacion'] = df_def_periodo['ENTIDAD_RES'].map(poblacion)
+    df_def_periodo['tasa_mortalidad'] = (
+        df_def_periodo['defunciones'] / df_def_periodo['poblacion'] * 100000)
 
     if estados_sel_def:
         df_def_graf = df_def_periodo[df_def_periodo['ESTADO'].isin(estados_sel_def)]
@@ -757,27 +719,22 @@ def render_periodo(periodo, df, df_def):
         df_def_graf = df_def_periodo
 
     gdf_def = gdf_base.merge(
-        df_def_periodo[['ENTIDAD_RES','defunciones']], on='ENTIDAD_RES', how='left')
+        df_def_periodo[['ENTIDAD_RES','tasa_mortalidad']], on='ENTIDAD_RES', how='left')
 
     col3, col4 = st.columns([1, 1])
     with col3:
         ruta_def_full = os.path.join(tempfile.gettempdir(), f'mapa_def_full_{periodo}.html')
         if not os.path.exists(ruta_def_full):
-            if periodo == "2025":
-                mapa_def_temp = hacer_mapa_rangos_fijos(
-                    gdf_def, 'defunciones', 'Defunciones por Estado',
-                    'Defunciones:', f"def_full_{periodo}")
-            else:
-                mapa_def_temp = hacer_mapa(
-                    gdf_def, 'defunciones', 'Defunciones por Estado',
-                    COLOR_DEF, 'Defunciones:', f"def_full_{periodo}")
+            mapa_def_temp = hacer_mapa(
+                gdf_def, 'tasa_mortalidad', 'Tasa de Mortalidad por Estado',
+                COLOR_DEF, 'Tasa (por 100,000 hab.):', f"def_full_{periodo}")
             mapa_def_temp.save(ruta_def_full)
 
-        if st.button("Ver Mapa Defunciones Completo", key=f"btn_def_{periodo}"):
+        if st.button("Ver Mapa Tasa de Mortalidad Completo", key=f"btn_def_{periodo}"):
             st.session_state[f'modal_def_{periodo}'] = True
 
         if st.session_state.get(f'modal_def_{periodo}', False):
-            @st.dialog("Mapa Defunciones - Vista Completa", width="large")
+            @st.dialog("Mapa Tasa de Mortalidad - Vista Completa", width="large")
             def modal_def():
                 with open(ruta_def_full, 'r', encoding='utf-8') as f:
                     mapa_html = f.read()
@@ -787,25 +744,20 @@ def render_periodo(periodo, df, df_def):
                     st.rerun()
             modal_def()
 
-        if periodo == "2025" and año_sel_def == "Todos":
-            mapa_def = hacer_mapa_rangos_fijos(
-                gdf_def, 'defunciones', 'Defunciones por Estado',
-                'Defunciones:', f"def_{periodo}")
-        else:
-            mapa_def = hacer_mapa(
-                gdf_def, 'defunciones', 'Defunciones por Estado',
-                COLOR_DEF, 'Defunciones:', f"def_{periodo}")
+        mapa_def = hacer_mapa(
+            gdf_def, 'tasa_mortalidad', 'Tasa de Mortalidad por Estado',
+            COLOR_DEF, 'Tasa (por 100,000 hab.):', f"def_{periodo}")
         st_folium(mapa_def, width="100%", height=430,
                   returned_objects=[], key=f"mapa_def_{periodo}")
 
     with col4:
         altura_def = max(750, len(df_def_graf) * 25)
         fig_def = px.bar(
-            df_def_graf.sort_values('defunciones', ascending=True),
-            x='defunciones', y='ESTADO', orientation='h',
-            color='defunciones', color_continuous_scale=COLOR_DEF,
-            labels={'defunciones':'Defunciones','ESTADO':''},
-            title=f'Defunciones por Estado ({periodo}'
+            df_def_graf.sort_values('tasa_mortalidad', ascending=True),
+            x='tasa_mortalidad', y='ESTADO', orientation='h',
+            color='tasa_mortalidad', color_continuous_scale=COLOR_DEF,
+            labels={'tasa_mortalidad':'Tasa de Mortalidad (por 100,000 hab.)','ESTADO':''},
+            title=f'Tasa de Mortalidad por Estado ({periodo}'
                   + (f' - {año_sel_def}' if año_sel_def != "Todos" else '') + ')',
             template=TEMPLATE
         )
