@@ -661,7 +661,7 @@ def render_periodo(periodo, df, df_def):
                 unsafe_allow_html=True)
     st.markdown(
         "Defunciones por dengue ajustadas por la población de cada estado "
-        "(tasa por 100,000 habitantes), la misma métrica utilizada en la validación del manuscrito."
+        "(tasa por 100,000 habitantes)."
     )
 
     st.markdown("""
